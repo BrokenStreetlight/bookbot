@@ -1,11 +1,20 @@
 class HTMLNode:
-    def __init__(self, tag=None, value=None, children=None, props=None):
+    def __init__(
+        self,
+        tag: str | None = None,
+        value: str | None = None,
+        children: list["HTMLNode"] | None = None,
+        props: dict[str, str] | None = None,
+    ):
         self.tag = tag
         self.value = value
         self.children = children
         self.props = props
 
-    def to_html(self):
+    def to_html(self) -> str:
+        """Convert the Node to HTML string.
+        returns:
+        str"""
         raise NotImplementedError("Needs to be implemented")
 
     def props_to_html(self):
@@ -21,7 +30,7 @@ class HTMLNode:
 
 
 class LeafNode(HTMLNode):
-    def __init__(self, tag, value, props=None):
+    def __init__(self, tag: str, value: str, props: dict[str, str] | None = None):
         super().__init__(tag, value, None, props)
 
     def to_html(self):
@@ -35,7 +44,9 @@ class LeafNode(HTMLNode):
 
 
 class ParentNode(HTMLNode):
-    def __init__(self, tag, children, props=None):
+    def __init__(
+        self, tag: str, children: list["HTMLNode"], props: dict[str, str] | None = None
+    ):
         super().__init__(tag, None, children, props)
 
     def to_html(self):

@@ -19,7 +19,9 @@ class TextNode:
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, TextNode):
-            raise NotImplemented
+            raise NotImplementedError(
+                f"This can only compare objects of Type: TextNode"
+            )
         if self.text != other.text:
             return False
         if self.text_type != other.text_type:
