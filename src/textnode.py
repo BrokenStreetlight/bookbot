@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import Optional
 
 
 class TextType(Enum):
@@ -11,19 +12,21 @@ class TextType(Enum):
 
 
 class TextNode:
-    def __init__(self, text, text_type, url=None):
+    def __init__(self, text: str, text_type: TextType, url: Optional[str]) -> None:
         self.text = text
         self.text_type = text_type
         self.url = url
 
-    def __eq__(self, obj):
-        if self.text != obj.text:
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, TextNode):
+            raise NotImplemented
+        if self.text != other.text:
             return False
-        if self.text_type != obj.text_type:
+        if self.text_type != other.text_type:
             return False
-        if self.url != obj.url:
+        if self.url != other.url:
             return False
         return True
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"TextNode({self.text}, {self.text_type.value}, {self.url})"
