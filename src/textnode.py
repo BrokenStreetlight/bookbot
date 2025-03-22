@@ -1,5 +1,4 @@
 from enum import Enum
-from typing import Optional
 
 
 class TextType(Enum):
@@ -12,7 +11,7 @@ class TextType(Enum):
 
 
 class TextNode:
-    def __init__(self, text: str, text_type: TextType, url: Optional[str]) -> None:
+    def __init__(self, text: str, text_type: TextType, url: str | None = None) -> None:
         self.text = text
         self.text_type = text_type
         self.url = url

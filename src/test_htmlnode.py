@@ -1,19 +1,19 @@
 import unittest
 
-from htmlnode import HTMLNode, LeafNode, ParentNode
+from htmlnode import HTMLNode, LeafNode
 
 
 class TestHTMLNode(unittest.TestCase):
     def test_eq(self):
         html = HTMLNode(
-            "a", "a", "a", {"href": "https://www.google.com", "target": "_blank"}
+            "a", "a", None, {"href": "https://www.google.com", "target": "_blank"}
         )
         expected = ' href="https://www.google.com" target="_blank"'
         self.assertEqual(html.props_to_html(), expected)
 
     def test_error(self):
         html = HTMLNode(
-            "a", "a", "a", {"href": "https://www.google.com", "target": "_blank"}
+            "a", "a", None, {"href": "https://www.google.com", "target": "_blank"}
         )
         with self.assertRaises(NotImplementedError):
             html.to_html()
@@ -43,7 +43,7 @@ class TestLeafNode(unittest.TestCase):
         self.assertEqual(html, expected)
 
     def test_error(self):
-        html = LeafNode("p", None)
+        html = LeafNode("p", None)  # type: ignore checking for ValueError
         with self.assertRaises(ValueError):
             html.to_html()
 
