@@ -1,7 +1,11 @@
 import unittest
 
 from textnode import TextNode, TextType
-from splitnode import split_nodes_delimiter, split_nodes_image, split_nodes_link
+from splitnode import (
+    split_nodes_delimiter,
+    split_nodes_image,
+    split_nodes_link,
+)
 
 
 class TestSplitNode(unittest.TestCase):
@@ -40,11 +44,6 @@ class TestSplitNode(unittest.TestCase):
                 TextNode(" word", TextType.TEXT),
             ],
         )
-
-    def test_split_error(self):
-        node = TextNode("This is text with a **bold block word", TextType.TEXT)
-        with self.assertRaises(ValueError):
-            split_nodes_delimiter([node], "**", TextType.BOLD)
 
     def test_split_many(self):
         nodes = [

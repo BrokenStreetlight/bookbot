@@ -1,7 +1,6 @@
 import logging
 
-from textnode import TextNode, TextType
-from splitnode import split_nodes_image
+from textnode import text_to_textnodes
 
 
 def configure_logging():
@@ -27,16 +26,13 @@ configure_logging()
 logger = logging.getLogger(__name__)
 
 
-def main():
-    t1 = TextNode("This is some anchor text", TextType.LINK, "https://www.boot.dev")
-    logger.debug("TextNode: %s", t1)
+def main(text: str):
+    nodes = text_to_textnodes(text)
+    for node in nodes:
+        logger.debug("Node: %s", node)
 
 
 if __name__ == "__main__":
     logger.debug("##########   NEW RUN   ##########")
-    node = TextNode(
-        "This is text with an ![image](https://i.imgur.com/zjjcJKZ.png) and another ![second image](https://i.imgur.com/3elNhQu.png)",
-        TextType.TEXT,
-    )
-    new_nodes = split_nodes_image([node])
-    # main()
+    markdown = "This is **text** with an _italic_ word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
+    main(markdown)

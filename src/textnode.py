@@ -59,3 +59,22 @@ def text_node_to_html_node(text_node: TextNode) -> LeafNode:
             raise ValueError("URL is required for IMAGE TextType")
         return LeafNode("img", "", {"src": text_node.url, "alt": node_text})
     raise NotImplementedError("TextNode cannot determine TextType")
+
+
+def text_to_textnodes(text: str) -> list[TextNode]:
+    from splitnode import split_nodes_delimiter, split_nodes_image, split_nodes_link
+
+    new_nodes: list[TextNode] = []
+    old_nodes: list[TextNode] = [TextNode(text, TextType.TEXT)]
+
+    new_nodes = split_nodes_delimiter(old_nodes, "**", TextType.BOLD)
+    old_nodes = new_nodes.copy()
+    new_nodes = split_nodes_delimiter(old_nodes, "_", TextType.ITALIC)
+    old_nodes = new_nodes.copy()
+    new_nodes = split_nodes_delimiter(new_nodes, "`", TextType.CODE)
+    old_nodes = new_nodes.copy()
+    new_nodes = split_nodes_image(new_nodes)
+    old_nodes = new_nodes.copy()
+    new_nodes = split_nodes_link(new_nodes)
+
+    return new_nodes

@@ -5,6 +5,7 @@
         "htmlnode",
         "levelname",
         "splitnode",
-        "textnode"
+        "textnode",
+        "textnodes"
     ]
 }

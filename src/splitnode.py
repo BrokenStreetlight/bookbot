@@ -84,20 +84,3 @@ def split_nodes_link(old_nodes: list[TextNode]) -> list[TextNode]:
             split_nodes_url(old_node, TextType.LINK, extract_markdown_links)
         )
     return new_nodes
-
-
-def text_to_textnodes(text: str) -> list[TextNode]:
-    new_nodes: list[TextNode] = []
-    old_nodes: list[TextNode] = [TextNode(text, TextType.TEXT)]
-
-    new_nodes = split_nodes_delimiter(old_nodes, "**", TextType.BOLD)
-    old_nodes = new_nodes.copy()
-    new_nodes = split_nodes_delimiter(old_nodes, "_", TextType.ITALIC)
-    old_nodes = new_nodes.copy()
-    new_nodes = split_nodes_delimiter(new_nodes, "`", TextType.CODE)
-    old_nodes = new_nodes.copy()
-    new_nodes = split_nodes_image(new_nodes)
-    old_nodes = new_nodes.copy()
-    new_nodes = split_nodes_link(new_nodes)
-
-    return new_nodes
