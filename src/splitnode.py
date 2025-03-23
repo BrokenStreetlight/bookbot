@@ -14,9 +14,8 @@ def split_nodes_delimiter(
     for old_node in old_nodes:
         split_texts = old_node.text.split(delimiter)
         if len(split_texts) % 2 == 0:
-            raise ValueError(
-                f"Missing matching delimiter: {delimiter} in {old_node.text}"
-            )
+            new_nodes.append(old_node)
+            continue
         flip = True
         for text in split_texts:
             if flip:
@@ -84,4 +83,21 @@ def split_nodes_link(old_nodes: list[TextNode]) -> list[TextNode]:
         new_nodes.extend(
             split_nodes_url(old_node, TextType.LINK, extract_markdown_links)
         )
+    return new_nodes
+
+
+def text_to_textnodes(text: str) -> list[TextNode]:
+    new_nodes: list[TextNode] = []
+    old_nodes: list[TextNode] = [TextNode(text, TextType.TEXT)]
+
+    new_nodes = split_nodes_delimiter(old_nodes, "**", TextType.BOLD)
+    old_nodes = new_nodes.copy()
+    new_nodes = split_nodes_delimiter(old_nodes, "_", TextType.ITALIC)
+    old_nodes = new_nodes.copy()
+    new_nodes = split_nodes_delimiter(new_nodes, "`", TextType.CODE)
+    old_nodes = new_nodes.copy()
+    new_nodes = split_nodes_image(new_nodes)
+    old_nodes = new_nodes.copy()
+    new_nodes = split_nodes_link(new_nodes)
+
     return new_nodes
