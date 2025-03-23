@@ -1,25 +1,30 @@
 import logging
 
 from textnode import TextNode, TextType
+from splitnode import split_nodes_image
 
 
-def setup_file_logger():
-    logger = logging.getLogger(__name__)
-    logger.setLevel(logging.DEBUG)
-
-    # Create a file handler that logs even debug messages
-    fh = logging.FileHandler("bookbot.log")
-    fh.setLevel(logging.DEBUG)
-
-    # Create formatter
-    formatter = logging.Formatter(
-        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+def configure_logging():
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+        filename="bookbot.log",
+        filemode="a",
     )
-    fh.setFormatter(formatter)
 
-    # Add the handler to the logger
-    logger.addHandler(fh)
-    return logger
+    console = logging.StreamHandler()
+    console.setLevel(logging.DEBUG)
+    console_formatter = logging.Formatter(
+        fmt="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
+    console.setFormatter(console_formatter)
+    logging.getLogger("").addHandler(console)
+
+
+configure_logging()
+logger = logging.getLogger(__name__)
 
 
 def main():
@@ -28,5 +33,10 @@ def main():
 
 
 if __name__ == "__main__":
-    logger = setup_file_logger()
-    main()
+    logger.debug("##########   NEW RUN   ##########")
+    node = TextNode(
+        "This is text with an ![image](https://i.imgur.com/zjjcJKZ.png) and another ![second image](https://i.imgur.com/3elNhQu.png)",
+        TextType.TEXT,
+    )
+    new_nodes = split_nodes_image([node])
+    # main()

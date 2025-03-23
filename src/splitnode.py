@@ -1,5 +1,10 @@
+import logging
+from collections.abc import Callable, Generator
+
 from textnode import TextNode, TextType
 from extractmarkdown import extract_markdown_images, extract_markdown_links
+
+logger = logging.getLogger(__name__)
 
 
 def split_nodes_delimiter(
@@ -23,24 +28,60 @@ def split_nodes_delimiter(
     return new_nodes
 
 
+def split_old_node_text(old_text: str, node: TextNode) -> tuple[str, str]:
+    if node.text_type == TextType.IMAGE:
+        delimiter = f"![{node.text}]({node.url})"
+    elif node.text_type == TextType.LINK:
+        delimiter = f"[{node.text}]({node.url})"
+    else:
+        raise ValueError(
+            "TextType is invalid for split_node_url: %s", node.text_type.value
+        )
+
+    split_text = old_text.split(delimiter, 1)
+    before_text = split_text[0]
+    after_text = split_text[1]
+    return before_text, after_text
+
+
+def split_nodes_url(
+    old_node: TextNode,
+    text_type: TextType,
+    func: Callable[[str], list[tuple[str, str]]],
+) -> Generator[TextNode, None, None]:
+    markdown_returns = func(old_node.text)
+    if not markdown_returns:
+        logger.debug("Old Node did not contain %s markdown", text_type.value)
+        yield old_node
+        return
+    original_text = old_node.text
+    for md_return in markdown_returns:
+        node = TextNode(md_return[0], text_type, md_return[1])
+        before, original_text = split_old_node_text(original_text, node)
+        if len(before) > 0:
+            yield TextNode(before, TextType.TEXT)
+        yield node
+
+
 def split_nodes_image(old_nodes: list[TextNode]) -> list[TextNode]:
+    new_nodes: list[TextNode] = []
     for old_node in old_nodes:
-        images = extract_markdown_images(old_node.text)
-        old_text = old_node.text
-        for image in images:
-            image_alt = image[0]
-            image_link = image[1]
-            section = old_text.split(f"![{image_alt}]({image_link})", 1)
-            print(f"section:{section}")
-            print(f"old_text:{old_text}")
-            old_text = old_text.replace(section[0])
-            print(f"post_old_text:{old_text}")
-            print("----")
+        if not old_node.text_type == TextType.TEXT:
+            new_nodes.append(old_node)
+            continue
+        new_nodes.extend(
+            split_nodes_url(old_node, TextType.IMAGE, extract_markdown_images)
+        )
+    return new_nodes
 
 
-if __name__ == "__main__":
-    node = TextNode(
-        "This is text with an ![image](https://i.imgur.com/zjjcJKZ.png) and another ![second image](https://i.imgur.com/3elNhQu.png)",
-        TextType.TEXT,
-    )
-    new_nodes = split_nodes_image([node])
+def split_nodes_link(old_nodes: list[TextNode]) -> list[TextNode]:
+    new_nodes: list[TextNode] = []
+    for old_node in old_nodes:
+        if not old_node.text_type == TextType.TEXT:
+            new_nodes.append(old_node)
+            continue
+        new_nodes.extend(
+            split_nodes_url(old_node, TextType.LINK, extract_markdown_links)
+        )
+    return new_nodes
