@@ -20,8 +20,8 @@ def split_nodes_delimiter(
 ) -> list[TextNode]:
     new_nodes: list[TextNode] = []
     for old_node in old_nodes:
-        split_check = validate_delimiter(old_node.text, delimiter)
 
+        split_check = validate_delimiter(old_node.text, delimiter)
         if not split_check:
             new_nodes.append(old_node)
             continue

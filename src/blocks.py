@@ -10,25 +10,6 @@ class BlockType(Enum):
     ORDERED_LIST = "ordered_list"
 
 
-def check_block_headers(block: str) -> bool:
-    if block.find("#") == -1:
-        return False
-
-    if not block.find("# ", 0, 2) == -1:
-        return True
-    if not block.find("## ", 0, 3) == -1:
-        return True
-    if not block.find("### ", 0, 4) == -1:
-        return True
-    if not block.find("#### ", 0, 5) == -1:
-        return True
-    if not block.find("##### ", 0, 6) == -1:
-        return True
-    if not block.find("###### ", 0, 7) == -1:
-        return True
-    return False
-
-
 def check_unordered_list_block(block: str) -> bool:
     if block.find("- ") == -1:
         return False
@@ -56,13 +37,17 @@ def check_ordered_list_block(block: str) -> bool:
 
 
 def block_to_block_type(block: str) -> BlockType:
-    if check_block_headers(block):
+    if block.startswith(("# ", "## ", "### ", "#### ", "##### ", "###### ")):
         return BlockType.HEADING
 
     if not block.find("```", 0, 3) == -1:
-        return BlockType.CODE
+        if block.endswith("```"):
+            return BlockType.CODE
 
     if not block.find(">", 0, 1) == -1:
+        for line in block.splitlines():
+            if not line.startswith(">"):
+                return BlockType.PARAGRAPH
         return BlockType.QUOTE
 
     if check_unordered_list_block(block):

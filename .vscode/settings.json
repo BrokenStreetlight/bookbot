@@ -1,11 +1,12 @@
 {
-    "cSpell.words": [
-        "bookbot",
-        "extractmarkdown",
-        "htmlnode",
-        "levelname",
-        "splitnode",
-        "textnode",
-        "textnodes"
-    ]
+  "cSpell.words": [
+    "bookbot",
+    "extractmarkdown",
+    "htmlnode",
+    "levelname",
+    "splitnode",
+    "textnode",
+    "textnodes"
+  ],
+  "python.REPL.enableREPLSmartSend": false
 }
