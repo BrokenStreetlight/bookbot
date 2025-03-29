@@ -7,15 +7,26 @@ from extractmarkdown import extract_markdown_images, extract_markdown_links
 logger = logging.getLogger(__name__)
 
 
+def validate_delimiter(text: str, delimiter: str) -> bool:
+    f_pos = text.find(delimiter)
+    s_pos = text.rfind(delimiter)
+    if f_pos == s_pos:
+        return False
+    return True
+
+
 def split_nodes_delimiter(
     old_nodes: list[TextNode], delimiter: str, text_type: TextType
 ) -> list[TextNode]:
     new_nodes: list[TextNode] = []
     for old_node in old_nodes:
-        split_texts = old_node.text.split(delimiter)
-        if len(split_texts) % 2 == 0:
+        split_check = validate_delimiter(old_node.text, delimiter)
+
+        if not split_check:
             new_nodes.append(old_node)
             continue
+
+        split_texts = old_node.text.split(delimiter)
         flip = True
         for text in split_texts:
             if flip:

@@ -43,7 +43,7 @@ class TestLeafNode(unittest.TestCase):
         self.assertEqual(html, expected)
 
     def test_error(self):
-        html = LeafNode("p", None)  # type: ignore checking for ValueError
+        html = LeafNode("p", None)  # type: ignore , checking for ValueError
         with self.assertRaises(ValueError):
             html.to_html()
 
@@ -76,6 +76,6 @@ class TestParentNode(unittest.TestCase):
         )
 
     def test_to_html_tag_error(self):
-        p1 = ParentNode(None, [LeafNode(None, "Normal text")])  # type: ignore Testing ValueError
+        p1 = ParentNode(None, [LeafNode(None, "Normal text")])  # type: ignore , Testing ValueError
         with self.assertRaises(ValueError):
             p1.to_html()
