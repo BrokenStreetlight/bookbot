@@ -1,6 +1,7 @@
 import logging
 import os
 import shutil
+import sys
 
 from extractmarkdown import generate_pages_recursive
 
@@ -28,10 +29,10 @@ configure_logging()
 logger = logging.getLogger(__name__)
 
 
-def prep_public():
-    if os.path.exists("public"):
-        shutil.rmtree("public")
-    os.mkdir("public")
+def prep_docs(dest_path: str):
+    if os.path.exists(dest_path):
+        shutil.rmtree(dest_path)
+    os.mkdir(dest_path)
 
 
 def walk_contents(static_path: str, public_path: str) -> None:
@@ -48,16 +49,17 @@ def walk_contents(static_path: str, public_path: str) -> None:
             walk_contents(item_path, dst_path)
 
 
-def copy_contents():
-    walk_contents("static", "public")
-
-
 def main():
-    logger.debug("Prepping Public folder")
-    prep_public()
+    cli_args = sys.argv
+    if len(cli_args) == 1:
+        basepath = "/"
+    else:
+        basepath = cli_args[1]
+    logger.debug("Prepping Docs folder")
+    prep_docs("docs")
     logger.debug("Copying Contents from static folder")
-    copy_contents()
-    generate_pages_recursive("content", "template.html", "public")
+    walk_contents("static", "docs")
+    generate_pages_recursive("content", "template.html", "docs", basepath)
 
 
 if __name__ == "__main__":
