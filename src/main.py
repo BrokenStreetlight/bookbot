@@ -1,6 +1,8 @@
 import logging
+import os
+import shutil
 
-from textnode import text_to_textnodes
+from extractmarkdown import generate_page
 
 
 def configure_logging():
@@ -26,13 +28,37 @@ configure_logging()
 logger = logging.getLogger(__name__)
 
 
-def main(text: str):
-    nodes = text_to_textnodes(text)
-    for node in nodes:
-        logger.debug("Node: %s", node)
+def prep_public():
+    if os.path.exists("public"):
+        shutil.rmtree("public")
+    os.mkdir("public")
+
+
+def walk_contents(static_path: str, public_path: str) -> None:
+    dir_list = os.listdir(static_path)
+    for item in dir_list:
+        item_path = os.path.join(static_path, item)
+        dst_path = os.path.join(public_path, item)
+        if os.path.isfile(item_path):
+            logger.debug(f"Moving File: {item_path} to {dst_path}")
+            shutil.copyfile(item_path, dst_path)
+        else:
+            logger.debug(f"Walking Folder: {item_path}")
+            os.mkdir(dst_path)
+            walk_contents(item_path, dst_path)
+
+
+def copy_contents():
+    walk_contents("static", "public")
+
+
+def main():
+    logger.debug("Prepping Public folder")
+    prep_public()
+    logger.debug("Copying Contents from static folder")
+    copy_contents()
+    generate_page("content/index.md", "template.html", "public/index.html")
 
 
 if __name__ == "__main__":
-    logger.debug("##########   NEW RUN   ##########")
-    markdown = "This is **text** with an _italic_ word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
-    main(markdown)
+    main()

@@ -1,6 +1,10 @@
 import unittest
 
-from extractmarkdown import extract_markdown_images, extract_markdown_links
+from extractmarkdown import (
+    extract_markdown_images,
+    extract_markdown_links,
+    extract_title,
+)
 
 
 class TestExtractMarkdown(unittest.TestCase):
@@ -21,3 +25,14 @@ class TestExtractMarkdown(unittest.TestCase):
             ],
             matches,
         )
+
+    def test_extract_title(self):
+        matches = extract_title(
+            """
+            ### This is a test
+            ## Of finding the
+            # HIDDEN_TITLE
+            ## Dont mess up
+        """
+        )
+        self.assertEqual(matches, "HIDDEN_TITLE")

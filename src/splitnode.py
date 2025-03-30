@@ -61,7 +61,6 @@ def split_nodes_url(
 ) -> Generator[TextNode, None, None]:
     markdown_returns = func(old_node.text)
     if not markdown_returns:
-        logger.debug("Old Node did not contain %s markdown", text_type.value)
         yield old_node
         return
     original_text = old_node.text

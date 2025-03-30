@@ -55,12 +55,19 @@ def code_block(text: str) -> ParentNode:
 
 
 def ul_block(text: str) -> ParentNode:
-    nodes: list[LeafNode] = []
+    nodes: list[LeafNode | ParentNode] = []
     lines = text.splitlines()
 
     for line in lines:
         if line.find("- ", 0, 2) == -1:
             raise ValueError("Got unexpected line start in unordered list")
+        line = line.lstrip("- ")
+        line = line.strip()
+        line_nodes: list[LeafNode] = []
+        line_nodes.extend(text_to_children(line))
+        if len(line_nodes) > 0:
+            nodes.append(ParentNode("li", line_nodes))
+            continue
         nodes.append(LeafNode("li", line))
     return ParentNode("ul", nodes)
 
@@ -73,6 +80,8 @@ def ol_block(text: str) -> ParentNode:
     for line in lines:
         if line.find(f"{i}.", 0, len(str(i)) + 1) == -1:
             raise ValueError("Got unexpected line start in ordered list")
+        line = line.strip(f"{i}. ")
+        line = line.strip()
         i += 1
         nodes.append(LeafNode("li", line))
     return ParentNode("ol", nodes)
@@ -97,6 +106,15 @@ def quote_block(text: str) -> ParentNode:
     return ParentNode("blockquote", nodes)
 
 
+def header_block(text: str, block_tag: str) -> ParentNode:
+    nodes: list[LeafNode] = []
+    clean_text = strip_returns(text)
+    strip_char = "#" * int(block_tag[1])
+    clean_text = clean_text.strip(f"{strip_char} ")
+    nodes.extend(text_to_children(clean_text))
+    return ParentNode(block_tag, nodes)
+
+
 def markdown_to_html_node(markdown: str) -> HTMLNode:
     nodes: list[ParentNode] = []
 
@@ -115,6 +133,9 @@ def markdown_to_html_node(markdown: str) -> HTMLNode:
             continue
         if block_type == BlockType.QUOTE:
             nodes.append(quote_block(block))
+            continue
+        if block_type == BlockType.HEADING:
+            nodes.append(header_block(block, block_tag))
             continue
         clean_text = strip_returns(block)
         children.extend(text_to_children(clean_text))
