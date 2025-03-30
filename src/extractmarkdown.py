@@ -40,7 +40,7 @@ def extract_title(markdown: str) -> str:
     raise ValueError("Did not find H1 header")
 
 
-def generate_page(from_path: str, template_path: str, dest_path: str):
+def generate_page(from_path: str, template_path: str, dest_path: str) -> None:
     print(f"Generating page from {from_path} to {dest_path} using {template_path}")
     logger.debug(
         f"Generating page from {from_path} to {dest_path} using {template_path}"
@@ -64,3 +64,20 @@ def generate_page(from_path: str, template_path: str, dest_path: str):
 
     with open(dest_path, mode="w") as f:
         f.write(template)
+
+
+def generate_pages_recursive(
+    dir_path_content: str, template_path: str, dest_dir_path: str
+) -> None:
+    dir_list = os.listdir(dir_path_content)
+    for item in dir_list:
+        item_path = os.path.join(dir_path_content, item)
+        dst_path = os.path.join(dest_dir_path, item)
+        if os.path.isfile(item_path):
+            logger.debug(f"Creating HTML from {item}")
+            dst_path = dst_path.replace(".md", ".html")
+            generate_page(item_path, template_path, dst_path)
+        else:
+            logger.debug(f"Walking Folder: {item_path}")
+            os.mkdir(dst_path)
+            generate_pages_recursive(item_path, template_path, dst_path)

@@ -2,7 +2,7 @@ import logging
 import os
 import shutil
 
-from extractmarkdown import generate_page
+from extractmarkdown import generate_pages_recursive
 
 
 def configure_logging():
@@ -57,7 +57,7 @@ def main():
     prep_public()
     logger.debug("Copying Contents from static folder")
     copy_contents()
-    generate_page("content/index.md", "template.html", "public/index.html")
+    generate_pages_recursive("content", "template.html", "public")
 
 
 if __name__ == "__main__":

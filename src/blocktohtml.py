@@ -73,7 +73,7 @@ def ul_block(text: str) -> ParentNode:
 
 
 def ol_block(text: str) -> ParentNode:
-    nodes: list[LeafNode] = []
+    nodes: list[LeafNode | ParentNode] = []
     lines = text.splitlines()
 
     i = 1
@@ -83,6 +83,11 @@ def ol_block(text: str) -> ParentNode:
         line = line.strip(f"{i}. ")
         line = line.strip()
         i += 1
+        line_nodes: list[LeafNode] = []
+        line_nodes.extend(text_to_children(line))
+        if len(line_nodes) > 0:
+            nodes.append(ParentNode("li", line_nodes))
+            continue
         nodes.append(LeafNode("li", line))
     return ParentNode("ol", nodes)
 
